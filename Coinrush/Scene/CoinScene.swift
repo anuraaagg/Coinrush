@@ -31,6 +31,10 @@ class CoinScene: ObservableObject {
   @Published var showMessage: Bool = false
   @Published var currentMessage: String = ""
 
+  // Anime Quote Modal state
+  @Published var showQuoteModal: Bool = false
+  @Published var currentQuote: AnimeQuote = AnimeQuoteManager.random()
+
   /// Cancellables
   private var cancellables = Set<AnyCancellable>()
 
@@ -209,27 +213,33 @@ class CoinScene: ObservableObject {
     var targetPosition = originalPosition
     targetPosition.z += PhysicsConfig.specialCoinZoomDistance
 
-    // Show message
+    // Prepare random quote for modal
+    currentQuote = AnimeQuoteManager.random()
+
+    // Show local mini message first
     currentMessage = specialCoinManager.randomMessage()
     showMessage = true
 
     // Animation sequence
     DispatchQueue.main.asyncAfter(deadline: .now() + PhysicsConfig.specialCoinAnimationDuration) {
       [weak self] in
+
+      // Mark current special coin as 'gone' for this session
+      // No new special coin will be selected until we shake/reset
+      self?.specialCoinManager.markAsFound()
+
       // Return to original position
       coin.position = originalPosition
       coin.resumePhysics()
 
-      // Hide message after delay
-      DispatchQueue.main.asyncAfter(deadline: .now() + PhysicsConfig.messageDisplayDuration) {
-        self?.showMessage = false
+      // Show the anime quote modal
+      self?.showQuoteModal = true
 
-        // Select new special coin
-        self?.specialCoinManager.selectNewSpecialCoin()
-      }
+      // Hide the mini "BINGO!" message
+      self?.showMessage = false
     }
 
-    // Animate position (simple linear for now)
+    // Animate position
     coin.position = targetPosition
   }
 

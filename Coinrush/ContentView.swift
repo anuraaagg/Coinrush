@@ -38,6 +38,13 @@ struct ContentView: View {
         )
         .padding(.bottom, 100)
       }
+
+      // Anime Quote Modal
+      QuoteModal(
+        quote: scene.currentQuote,
+        isPresented: scene.showQuoteModal,
+        onDismiss: { scene.showQuoteModal = false }
+      )
     }
     .statusBarHidden(true)
     .onDisappear {
