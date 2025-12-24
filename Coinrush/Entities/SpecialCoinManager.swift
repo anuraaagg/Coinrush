@@ -50,10 +50,16 @@ class SpecialCoinManager {
     // Select new special coin
     guard !coins.isEmpty else { return nil }
 
+    // Filter out previous if possible, or just pick random
     let availableCoins = coins
     guard let newSpecial = availableCoins.randomElement() else { return nil }
 
     newSpecial.setSpecial(true)
+
+    // Ensure it's toward the front (positive Z) so it's VISIBLE to the user
+    // We use a value slightly less than max to avoid clipping but ensure it's on top
+    newSpecial.position.z = 0.05
+
     currentSpecialCoin = newSpecial
 
     return newSpecial

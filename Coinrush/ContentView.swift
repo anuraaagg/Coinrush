@@ -43,7 +43,7 @@ struct ContentView: View {
       QuoteModal(
         quote: scene.currentQuote,
         isPresented: scene.showQuoteModal,
-        onDismiss: { scene.showQuoteModal = false }
+        onDismiss: { scene.dismissQuoteModal() }
       )
     }
     .statusBarHidden(true)

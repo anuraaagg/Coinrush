@@ -224,15 +224,12 @@ class CoinScene: ObservableObject {
     DispatchQueue.main.asyncAfter(deadline: .now() + PhysicsConfig.specialCoinAnimationDuration) {
       [weak self] in
 
-      // Mark current special coin as 'gone' for this session
-      // No new special coin will be selected until we shake/reset
-      self?.specialCoinManager.markAsFound()
-
       // Return to original position
       coin.position = originalPosition
       coin.resumePhysics()
 
       // Show the anime quote modal
+      // We don't mark as found yet, so it stays purple in the background
       self?.showQuoteModal = true
 
       // Hide the mini "BINGO!" message
@@ -241,6 +238,18 @@ class CoinScene: ObservableObject {
 
     // Animate position
     coin.position = targetPosition
+  }
+
+  /// Handle dismissal of the quote modal
+  func dismissQuoteModal() {
+    showQuoteModal = false
+
+    // Mark current as found (clears its special status)
+    specialCoinManager.markAsFound()
+
+    // Immediately select a NEW one so there is always one to find
+    // This satisfies "visible once everytime until clicked"
+    specialCoinManager.selectNewSpecialCoin()
   }
 
   /// Find coin at screen position
