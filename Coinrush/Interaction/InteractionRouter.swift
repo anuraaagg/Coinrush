@@ -24,7 +24,7 @@ class InteractionRouter: ObservableObject {
 
   /// Tilt update throttle
   private var lastTiltUpdate: Date = .distantPast
-  private let tiltUpdateInterval: TimeInterval = 1.0 / 30.0
+  private let tiltUpdateInterval: TimeInterval = 1.0 / 60.0
 
   /// Setup interaction routing
   func setup(scene: CoinScene, arView: ARView) {

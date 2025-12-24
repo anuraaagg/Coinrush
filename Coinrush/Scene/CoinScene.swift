@@ -144,7 +144,7 @@ class CoinScene: ObservableObject {
   /// Apply tilt force to all coins
   func applyTilt(pitch: Float, roll: Float) {
     // We apply small impulses based on tilt for a "flowing" effect
-    let strength = PhysicsConfig.tiltMultiplier * 0.1
+    let strength = PhysicsConfig.tiltMultiplier * 0.2
     for coin in coins {
       let forceX = roll * strength
       let forceY = -pitch * strength

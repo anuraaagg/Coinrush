@@ -25,14 +25,14 @@ struct PhysicsConfig {
 
   // MARK: - Physics Body
   static let mass: Float = 0.3  // Slightly weightier
-  static let friction: Float = 0.7
-  static let restitution: Float = 0.1
-  static let linearDamping: Float = 1.2  // Higher for less "floaty" feel
-  static let angularDamping: Float = 1.5  // Higher for stability
+  static let friction: Float = 0.5  // Lower friction for more slide
+  static let restitution: Float = 0.2  // Slightly more bounce
+  static let linearDamping: Float = 0.5  // Much lower for "fluid" motion
+  static let angularDamping: Float = 0.6  // Much lower for faster rotation
 
   // MARK: - Gravity
   static let baseGravity: Float = -9.8
-  static let tiltMultiplier: Float = 0.15
+  static let tiltMultiplier: Float = 0.5  // More aggressive tilt response
   static let shakeGravityMin: Float = -18.0
   static let shakeGravityMax: Float = -22.0
   static let shakeDuration: TimeInterval = 0.5
@@ -49,8 +49,8 @@ struct PhysicsConfig {
   static let shakeImpulse: Float = 0.15
   static let flickImpulseUp: Float = 0.15
   static let flickAngularVelocity: Float = 8.0
-  static let dragForceMultiplier: Float = 0.05
-  static let dragRadius: Float = 0.15
+  static let dragForceMultiplier: Float = 0.1  // Much faster drag
+  static let dragRadius: Float = 0.18  // Bigger interaction area
 
   // MARK: - Animation
   static let specialCoinZoomDistance: Float = 0.1
