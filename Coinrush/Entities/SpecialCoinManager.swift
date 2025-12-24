@@ -5,6 +5,7 @@
 //  Manages the special tappable coin
 //
 
+import RealityKit
 import UIKit
 
 /// Manages which coin is the special interactive coin
@@ -58,7 +59,9 @@ class SpecialCoinManager {
 
     // Ensure it's toward the front (positive Z) so it's VISIBLE to the user
     // We use a value slightly less than max to avoid clipping but ensure it's on top
-    newSpecial.position.z = 0.05
+    var currentPosition = newSpecial.position
+    currentPosition.z = 0.05
+    newSpecial.position = currentPosition
 
     currentSpecialCoin = newSpecial
 
