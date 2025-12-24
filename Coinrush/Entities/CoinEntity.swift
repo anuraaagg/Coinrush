@@ -114,12 +114,6 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
       material.specular = .init(floatLiteral: 1.0)
     } else {
       // Regular coins: Shiny Anodized Metal
-      var red: CGFloat = 0
-      var green: CGFloat = 0
-      var blue: CGFloat = 0
-      var alpha: CGFloat = 0
-      UIColor.systemPink.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
       let finalColor = UIColor(
         hue: (0.95 + CGFloat(hueShift)),
         saturation: 0.8,
@@ -147,6 +141,11 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
       let tint: UIColor = isSpecial ? .systemPurple : .white
       material.baseColor = .init(tint: tint, texture: .init(texture))
 
+      if isSpecial {
+        material.emissiveColor = .init(color: .systemPurple)
+        material.emissiveIntensity = 2.0
+      }
+
       material.metallic = .init(floatLiteral: 0.3)
       material.roughness = .init(floatLiteral: 0.2)
       material.clearcoat = .init(floatLiteral: 0.8)
@@ -156,9 +155,18 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
 
     // Fallback to solid color
     var fallbackMaterial = PhysicallyBasedMaterial()
-    fallbackMaterial.baseColor = .init(tint: isSpecial ? .systemPurple : .systemPink)
-    fallbackMaterial.metallic = .init(floatLiteral: 1.0)
-    fallbackMaterial.roughness = .init(floatLiteral: 0.1)
+    if isSpecial {
+      // Gold coin with purple glow
+      fallbackMaterial.baseColor = .init(tint: .systemYellow)
+      fallbackMaterial.emissiveColor = .init(color: .systemPurple)
+      fallbackMaterial.emissiveIntensity = 5.0
+      fallbackMaterial.metallic = .init(floatLiteral: 1.0)
+      fallbackMaterial.roughness = .init(floatLiteral: 0.1)
+    } else {
+      fallbackMaterial.baseColor = .init(tint: .systemPink)
+      fallbackMaterial.metallic = .init(floatLiteral: 0.9)
+      fallbackMaterial.roughness = .init(floatLiteral: 0.3)
+    }
     fallbackMaterial.clearcoat = .init(floatLiteral: 1.0)
     return fallbackMaterial
   }
@@ -208,8 +216,7 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
       self.model = ModelComponent(mesh: mesh, materials: [createRimMaterial()])
     }
 
-    // Update faces
-    let height = PhysicsConfig.randomCoinHeight  // Re-fetching height is slightly risky but usually okay here for radius consistency
+    let height = (self.model?.mesh.bounds.extents.y) ?? PhysicsConfig.coinRadius
     updateFaces(height: height, radius: PhysicsConfig.coinRadius)
   }
 

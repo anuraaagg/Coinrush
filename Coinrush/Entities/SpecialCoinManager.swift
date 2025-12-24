@@ -12,20 +12,20 @@ class SpecialCoinManager {
 
   /// Messages displayed when special coin is tapped
   private static let messages: [String] = [
-    "you found me",
-    "nice catch",
-    "look again",
-    "feeling lucky?",
-    "one more time",
-    "almost there",
-    "keep going",
-    "found it",
-    "hidden gem",
-    "good eye",
-    "not so fast",
-    "try again",
-    "bingo",
-    "gotcha",
+    "YOU FOUND ME! 🪙",
+    "NICE CATCH! ✨",
+    "LOOK AGAIN! 🔍",
+    "FEELING LUCKY? 🍀",
+    "ONE MORE TIME! 🔄",
+    "ALMOST THERE! 🏁",
+    "KEEP GOING! 🚀",
+    "FOUND IT! 🎉",
+    "HIDDEN GEM! 💎",
+    "GOOD EYE! 👀",
+    "NOT SO FAST! ⚡️",
+    "TRY AGAIN! 🎲",
+    "BINGO! 🎯",
+    "GOTCHA! 💥",
   ]
 
   /// Current special coin

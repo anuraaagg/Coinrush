@@ -144,11 +144,10 @@ class CoinScene: ObservableObject {
   /// Apply tilt force to all coins
   func applyTilt(pitch: Float, roll: Float) {
     // We apply small impulses based on tilt for a "flowing" effect
-    // Scaling by mass so they feel consistent
-    let strength: Float = 0.015
+    let strength = PhysicsConfig.tiltMultiplier * 0.1
     for coin in coins {
       let forceX = roll * strength
-      let forceY = -pitch * strength  // Inverting pitch for gravity feel
+      let forceY = -pitch * strength
       coin.applyImpulse([forceX, forceY, 0])
     }
   }
@@ -161,10 +160,37 @@ class CoinScene: ObservableObject {
     for coin in coins {
       let distance = simd_distance(coin.position, position)
       if distance < radius {
-        // Force decreases with distance
         let falloff = 1.0 - (distance / radius)
         let force = velocity * multiplier * falloff
         coin.applyImpulse(force)
+      }
+    }
+  }
+
+  /// Apply flick upward force
+  func applyFlick(at position: SIMD3<Float>, velocity: Float) {
+    let radius = PhysicsConfig.dragRadius * 1.5
+    let impulseUp = PhysicsConfig.flickImpulseUp * velocity
+    let angularMag = PhysicsConfig.flickAngularVelocity
+
+    for coin in coins {
+      let distance = simd_distance(coin.position, position)
+      if distance < radius {
+        let falloff = 1.0 - (distance / radius)
+
+        let impulse: SIMD3<Float> = [
+          Float.random(in: -0.05...0.05),
+          impulseUp * falloff,
+          Float.random(in: -0.02...0.02),
+        ]
+        coin.applyImpulse(impulse)
+
+        let angular: SIMD3<Float> = [
+          Float.random(in: -angularMag...angularMag),
+          Float.random(in: -angularMag...angularMag),
+          Float.random(in: -angularMag...angularMag),
+        ]
+        coin.applyAngularVelocity(angular)
       }
     }
   }
@@ -209,7 +235,8 @@ class CoinScene: ObservableObject {
 
   /// Find coin at screen position
   func findCoin(at screenPosition: CGPoint, in arView: ARView) -> CoinEntity? {
-    let results = arView.hitTest(screenPosition, query: .nearest, mask: .default)
+    // Using hitTest without mask for broader detection
+    let results = arView.hitTest(screenPosition)
 
     for result in results {
       if let coin = result.entity as? CoinEntity {

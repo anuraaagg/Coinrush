@@ -25,6 +25,7 @@ class GestureHandler: NSObject {
   private var lastTouchTime: Date = Date()
 
   /// Gesture thresholds
+  private let flickSpeedThreshold: CGFloat = 500.0  // Lowered for easier flick
   private let tapDistanceThreshold: CGFloat = 10.0
   private let tapTimeThreshold: TimeInterval = 0.3
 
@@ -32,6 +33,7 @@ class GestureHandler: NSObject {
   private var isDragging = false
 
   /// Callbacks
+  var onFlick: ((CGPoint, CGFloat) -> Void)?
   var onDrag: ((CGPoint, CGPoint) -> Void)?
   var onTap: ((CGPoint) -> Void)?
 
@@ -72,6 +74,12 @@ class GestureHandler: NSObject {
     case .ended, .cancelled:
       isDragging = false
 
+      // Check for flick
+      let speed = sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
+      if speed > flickSpeedThreshold {
+        onFlick?(position, speed)
+      }
+
     default:
       break
     }
@@ -102,11 +110,24 @@ extension ARView {
         if coin.isSpecial {
           HapticsManager.shared.playSpecialCoinTap()
           scene.handleSpecialCoinTap(coin)
+        } else {
+          // Feedback for regular coins
+          HapticsManager.shared.playFlick()
+          coin.applyImpulse([0, 0.05, 0])
         }
       }
     }
 
     // Configure callbacks
+    handler.onFlick = { [weak self, weak scene] position, speed in
+      guard let self = self, let scene = scene else { return }
+
+      let worldPos = scene.screenToWorld(screenPosition: position, in: self)
+      let normalizedSpeed = Float(speed / 1500.0).clamped(to: 0.5...4.0)
+      scene.applyFlick(at: worldPos, velocity: normalizedSpeed)
+      HapticsManager.shared.playFlick()
+    }
+
     handler.onDrag = { [weak self, weak scene] from, to in
       guard let self = self, let scene = scene else { return }
 

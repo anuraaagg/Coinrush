@@ -32,6 +32,7 @@ struct PhysicsConfig {
 
   // MARK: - Gravity
   static let baseGravity: Float = -9.8
+  static let tiltMultiplier: Float = 0.15
   static let shakeGravityMin: Float = -18.0
   static let shakeGravityMax: Float = -22.0
   static let shakeDuration: TimeInterval = 0.5
@@ -46,10 +47,10 @@ struct PhysicsConfig {
 
   // MARK: - Interaction Forces
   static let shakeImpulse: Float = 0.15
-  static let flickImpulseUp: Float = 0.08
-  static let flickAngularVelocity: Float = 5.0
-  static let dragForceMultiplier: Float = 0.02
-  static let dragRadius: Float = 0.08
+  static let flickImpulseUp: Float = 0.15
+  static let flickAngularVelocity: Float = 8.0
+  static let dragForceMultiplier: Float = 0.05
+  static let dragRadius: Float = 0.15
 
   // MARK: - Animation
   static let specialCoinZoomDistance: Float = 0.1
