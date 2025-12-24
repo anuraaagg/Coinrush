@@ -24,8 +24,7 @@ class GestureHandler: NSObject {
   private var lastTouchPosition: CGPoint = .zero
   private var lastTouchTime: Date = Date()
 
-  /// Flick detection threshold
-  private let flickSpeedThreshold: CGFloat = 800.0
+  /// Gesture thresholds
   private let tapDistanceThreshold: CGFloat = 10.0
   private let tapTimeThreshold: TimeInterval = 0.3
 
@@ -33,7 +32,6 @@ class GestureHandler: NSObject {
   private var isDragging = false
 
   /// Callbacks
-  var onFlick: ((CGPoint, CGFloat) -> Void)?
   var onDrag: ((CGPoint, CGPoint) -> Void)?
   var onTap: ((CGPoint) -> Void)?
 
@@ -74,15 +72,6 @@ class GestureHandler: NSObject {
     case .ended, .cancelled:
       isDragging = false
 
-      // Check for flick
-      let speed = sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
-      if speed > flickSpeedThreshold {
-        // Flick detected - upward component is key
-        if velocity.y < 0 {  // Moving up
-          onFlick?(position, speed)
-        }
-      }
-
     default:
       break
     }
@@ -117,15 +106,7 @@ extension ARView {
       }
     }
 
-    handler.onFlick = { [weak self, weak scene] position, speed in
-      guard let self = self, let scene = scene else { return }
-
-      let worldPos = scene.screenToWorld(screenPosition: position, in: self)
-      let normalizedSpeed = Float(speed / 2000.0).clamped(to: 0.5...2.0)
-      scene.applyFlick(at: worldPos, velocity: normalizedSpeed)
-      HapticsManager.shared.playFlick()
-    }
-
+    // Configure callbacks
     handler.onDrag = { [weak self, weak scene] from, to in
       guard let self = self, let scene = scene else { return }
 

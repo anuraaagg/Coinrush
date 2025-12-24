@@ -15,21 +15,45 @@ struct MessageOverlay: View {
 
   var body: some View {
     Text(message)
-      .font(.system(size: 24, weight: .medium, design: .rounded))
-      .foregroundColor(.white)
-      .padding(.horizontal, 24)
-      .padding(.vertical, 12)
+      .font(.system(size: 12, weight: .bold, design: .rounded))
+      .foregroundColor(.white.opacity(0.8))
+      .padding(.horizontal, 12)
+      .padding(.vertical, 6)
       .background(
+        ZStack {
+          // Liquid glass base
+          Capsule()
+            .fill(.ultraThinMaterial)
+            .environment(\.colorScheme, .dark)
+
+          // Subtle inner glow
+          Capsule()
+            .fill(
+              LinearGradient(
+                colors: [.white.opacity(0.1), .clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+              )
+            )
+        }
+      )
+      .clipShape(Capsule())
+      .overlay(
+        // Sharp glass edge
         Capsule()
-          .fill(.ultraThinMaterial)
-          .overlay(
-            Capsule()
-              .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+          .strokeBorder(
+            LinearGradient(
+              colors: [.white.opacity(0.4), .white.opacity(0.1), .clear],
+              startPoint: .topLeading,
+              endPoint: .bottomTrailing
+            ),
+            lineWidth: 0.5
           )
       )
+      .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
       .opacity(isVisible ? 1.0 : 0.0)
-      .scaleEffect(isVisible ? 1.0 : 0.8)
-      .animation(.easeInOut(duration: PhysicsConfig.messageFadeDuration), value: isVisible)
+      .scaleEffect(isVisible ? 1.0 : 0.9)
+      .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isVisible)
   }
 }
 

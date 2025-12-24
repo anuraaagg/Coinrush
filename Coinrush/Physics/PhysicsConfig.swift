@@ -18,21 +18,20 @@ struct PhysicsConfig {
   static let coinHeightMax: Float = 0.02  // Much thicker
 
   // MARK: - Coin Spawning
-  static let coinCount: Int = 150  // Filled everywhere
-  static let spawnAreaWidth: Float = 0.45  // Matches container
-  static let spawnAreaHeight: Float = 0.7  // Matches container
-  static let spawnDepthVariance: Float = 0.1  // A bit more depth variance for filling
+  static let coinCount: Int = 45  // Optimal number for performance and fun
+  static let spawnAreaWidth: Float = 0.4  // Matches container
+  static let spawnAreaHeight: Float = 0.6  // Matches container
+  static let spawnDepthVariance: Float = 0.05  // Less depth cluster
 
   // MARK: - Physics Body
-  static let mass: Float = 0.25  // Heavier for bigger coins
-  static let friction: Float = 0.6
-  static let restitution: Float = 0.15
-  static let linearDamping: Float = 0.8
-  static let angularDamping: Float = 0.9
+  static let mass: Float = 0.3  // Slightly weightier
+  static let friction: Float = 0.7
+  static let restitution: Float = 0.1
+  static let linearDamping: Float = 1.2  // Higher for less "floaty" feel
+  static let angularDamping: Float = 1.5  // Higher for stability
 
   // MARK: - Gravity
   static let baseGravity: Float = -9.8
-  static let tiltMultiplier: Float = 1.2
   static let shakeGravityMin: Float = -18.0
   static let shakeGravityMax: Float = -22.0
   static let shakeDuration: TimeInterval = 0.5

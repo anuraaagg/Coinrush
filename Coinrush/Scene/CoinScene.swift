@@ -141,16 +141,15 @@ class CoinScene: ObservableObject {
     }
   }
 
-  /// Apply tilt gravity adjustment
+  /// Apply tilt force to all coins
   func applyTilt(pitch: Float, roll: Float) {
-    // Gravity is handled by RealityKit's physics system
-    // We apply continuous forces based on tilt
-    let multiplier = PhysicsConfig.tiltMultiplier
-
+    // We apply small impulses based on tilt for a "flowing" effect
+    // Scaling by mass so they feel consistent
+    let strength: Float = 0.015
     for coin in coins {
-      let forceX = roll * multiplier * 0.1
-      let forceZ = pitch * multiplier * 0.1
-      coin.addForce([forceX, 0, forceZ], relativeTo: nil)
+      let forceX = roll * strength
+      let forceY = -pitch * strength  // Inverting pitch for gravity feel
+      coin.applyImpulse([forceX, forceY, 0])
     }
   }
 
@@ -166,36 +165,6 @@ class CoinScene: ObservableObject {
         let falloff = 1.0 - (distance / radius)
         let force = velocity * multiplier * falloff
         coin.applyImpulse(force)
-      }
-    }
-  }
-
-  /// Apply flick upward force
-  func applyFlick(at position: SIMD3<Float>, velocity: Float) {
-    let radius = PhysicsConfig.dragRadius * 1.5
-    let impulseUp = PhysicsConfig.flickImpulseUp * velocity
-    let angularMag = PhysicsConfig.flickAngularVelocity
-
-    for coin in coins {
-      let distance = simd_distance(coin.position, position)
-      if distance < radius {
-        let falloff = 1.0 - (distance / radius)
-
-        // Upward impulse
-        let impulse: SIMD3<Float> = [
-          Float.random(in: -0.02...0.02),
-          impulseUp * falloff,
-          Float.random(in: -0.01...0.01),
-        ]
-        coin.applyImpulse(impulse)
-
-        // Angular velocity for tumbling
-        let angular: SIMD3<Float> = [
-          Float.random(in: -angularMag...angularMag),
-          Float.random(in: -angularMag...angularMag),
-          Float.random(in: -angularMag...angularMag),
-        ]
-        coin.applyAngularVelocity(angular)
       }
     }
   }
