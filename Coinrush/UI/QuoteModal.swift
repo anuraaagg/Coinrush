@@ -79,7 +79,7 @@ struct QuoteModal: View {
           VStack(spacing: 4) {
             Text(quote.character)
               .font(.system(size: 14, weight: .heavy, design: .rounded))
-              .foregroundColor(.systemPurple)
+              .foregroundColor(.purple)
 
             Text(quote.series)
               .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -96,7 +96,7 @@ struct QuoteModal: View {
                 Capsule()
                   .fill(
                     LinearGradient(
-                      colors: [.systemPurple, .systemPink], startPoint: .leading,
+                      colors: [.purple, .pink], startPoint: .leading,
                       endPoint: .trailing))
               )
           }
@@ -131,3 +131,4 @@ struct QuoteModal: View {
     .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isPresented)
   }
 }
+

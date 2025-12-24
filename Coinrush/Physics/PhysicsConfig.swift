@@ -25,10 +25,10 @@ struct PhysicsConfig {
 
   // MARK: - Physics Body
   static let mass: Float = 0.3  // Slightly weightier
-  static let friction: Float = 0.4  // Extra slippery
-  static let restitution: Float = 0.0  // ZERO restitution to stop vibration
-  static let linearDamping: Float = 0.4  // Fluid & Liquid feel
-  static let angularDamping: Float = 0.4
+  static let friction: Float = 0.7  // More friction for better stacking/stability
+  static let restitution: Float = 0.0  // Keep at zero to prevent micro-bounces
+  static let linearDamping: Float = 1.2  // Original stable values
+  static let angularDamping: Float = 1.5
 
   // MARK: - Gravity
   static let baseGravity: Float = -9.8
