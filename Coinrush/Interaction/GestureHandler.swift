@@ -113,7 +113,7 @@ extension ARView {
         } else {
           // Feedback for regular coins
           HapticsManager.shared.playFlick()
-          coin.applyImpulse([0, 0.05, 0])
+          coin.applyImpulse([0, 0.06, 0])
         }
       }
     }

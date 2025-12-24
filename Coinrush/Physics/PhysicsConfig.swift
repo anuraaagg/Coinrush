@@ -18,21 +18,21 @@ struct PhysicsConfig {
   static let coinHeightMax: Float = 0.02  // Much thicker
 
   // MARK: - Coin Spawning
-  static let coinCount: Int = 45  // Optimal number for performance and fun
+  static let coinCount: Int = 40  // Fewer coins = less jitter
   static let spawnAreaWidth: Float = 0.4  // Matches container
   static let spawnAreaHeight: Float = 0.6  // Matches container
   static let spawnDepthVariance: Float = 0.05  // Less depth cluster
 
   // MARK: - Physics Body
   static let mass: Float = 0.3  // Slightly weightier
-  static let friction: Float = 0.5  // Lower friction for more slide
-  static let restitution: Float = 0.2  // Slightly more bounce
-  static let linearDamping: Float = 0.5  // Much lower for "fluid" motion
-  static let angularDamping: Float = 0.6  // Much lower for faster rotation
+  static let friction: Float = 0.4  // Extra slippery
+  static let restitution: Float = 0.0  // ZERO restitution to stop vibration
+  static let linearDamping: Float = 0.4  // Fluid & Liquid feel
+  static let angularDamping: Float = 0.4
 
   // MARK: - Gravity
   static let baseGravity: Float = -9.8
-  static let tiltMultiplier: Float = 0.5  // More aggressive tilt response
+  static let tiltMultiplier: Float = 0.8  // Even more aggressive tilt to compensate for damping
   static let shakeGravityMin: Float = -18.0
   static let shakeGravityMax: Float = -22.0
   static let shakeDuration: TimeInterval = 0.5
@@ -49,8 +49,8 @@ struct PhysicsConfig {
   static let shakeImpulse: Float = 0.15
   static let flickImpulseUp: Float = 0.15
   static let flickAngularVelocity: Float = 8.0
-  static let dragForceMultiplier: Float = 0.1  // Much faster drag
-  static let dragRadius: Float = 0.18  // Bigger interaction area
+  static let dragForceMultiplier: Float = 0.15  // Boosted drag
+  static let dragRadius: Float = 0.2  // Wider reach
 
   // MARK: - Animation
   static let specialCoinZoomDistance: Float = 0.1
