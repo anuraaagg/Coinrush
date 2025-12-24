@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct CoinrushApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
+        .preferredColorScheme(.light)
     }
+  }
 }
