@@ -58,6 +58,20 @@ class CoinScene: ObservableObject {
     // Select special coin
     specialCoinManager.registerCoins(coins)
     specialCoinManager.selectNewSpecialCoin()
+
+    // Start lighting animation
+    setupAnimations()
+  }
+
+  private func setupAnimations() {
+    // Subscribe to scene updates to rotate lighting for "dancing" reflections
+    anchor.scene?.subscribe(to: SceneEvents.Update.self) { [weak self] event in
+      guard let self = self, let lighting = self.lighting else { return }
+
+      // Subtle rotation around the Y axis
+      let rotation = simd_quatf(angle: Float(event.deltaTime) * 0.2, axis: [0, 1, 0])
+      lighting.orientation *= rotation
+    }.store(in: &cancellables)
   }
 
   private func spawnCoins() {

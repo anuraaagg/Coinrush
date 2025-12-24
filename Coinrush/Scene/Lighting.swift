@@ -69,6 +69,21 @@ struct SceneLighting {
     pointLight.position = [0, 0.3, 0.2]
     lightContainer.addChild(pointLight)
 
+    // FUN: Add "Rim/Disco Lights" for metallic highlights
+    // Cyan light from the left
+    let cyanLight = PointLight()
+    cyanLight.light.color = .cyan
+    cyanLight.light.intensity = 1500
+    cyanLight.position = [-0.4, 0.2, 0.3]
+    lightContainer.addChild(cyanLight)
+
+    // Magenta light from the right
+    let magentaLight = PointLight()
+    magentaLight.light.color = .magenta
+    magentaLight.light.intensity = 1500
+    magentaLight.position = [0.4, 0.1, 0.3]
+    lightContainer.addChild(magentaLight)
+
     return lightContainer
   }
 }

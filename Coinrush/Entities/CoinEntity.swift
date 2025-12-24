@@ -13,7 +13,6 @@ enum SmileyFace: String, CaseIterable {
   case smiley1
   case smiley2
   case smiley3
-  case smiley4
 
   static var random: SmileyFace {
     allCases.randomElement() ?? .smiley1
@@ -51,25 +50,91 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
     let height = PhysicsConfig.randomCoinHeight
     let radius = PhysicsConfig.coinRadius
 
-    // Create cylinder mesh for coin
-    let mesh = MeshResource.generateCylinder(height: height, radius: radius)
+    // 1. Setup the Rim (main model)
+    let rimMesh = MeshResource.generateCylinder(height: height, radius: radius)
+    let rimMaterial = createRimMaterial()
+    self.model = ModelComponent(mesh: rimMesh, materials: [rimMaterial])
 
-    // Create textured material from smiley face
-    let textureName = isSpecial ? "smileySpecial" : smileyFace.rawValue
-    let material = createTexturedMaterial(named: textureName)
+    // 2. Setup the Faces
+    updateFaces(height: height, radius: radius)
 
-    // Apply model with textured material
-    self.model = ModelComponent(mesh: mesh, materials: [material])
-
-    // Setup physics
+    // 3. Setup Physics & Collision
     setupPhysics(height: height, radius: radius)
 
-    // Setup collision for tap detection
+    // Collision for tap detection
     let shape = ShapeResource.generateCapsule(height: height, radius: radius)
     self.collision = CollisionComponent(shapes: [shape])
 
     // Lay coin flat (face-up)
     self.transform.rotation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
+  }
+
+  private func updateFaces(height: Float, radius: Float) {
+    // Remove existing faces if any
+    self.children.filter { $0.name.contains("face") }.forEach { $0.removeFromParent() }
+
+    let faceTextureName = isSpecial ? "smileySpecial" : smileyFace.rawValue
+    let faceMaterial = createTexturedMaterial(named: faceTextureName)
+
+    // Very thin cylinder for the face disk
+    // Slightly smaller radius to avoid z-fighting at the edges
+    let faceMesh = MeshResource.generateCylinder(height: 0.0002, radius: radius * 0.99)
+
+    // Top Face
+    let topFace = ModelEntity(mesh: faceMesh, materials: [faceMaterial])
+    topFace.name = "face_top"
+    topFace.position = [0, height / 2 + 0.0001, 0]
+    self.addChild(topFace)
+
+    // Bottom Face
+    let bottomFace = ModelEntity(mesh: faceMesh, materials: [faceMaterial])
+    bottomFace.name = "face_bottom"
+    bottomFace.position = [0, -height / 2 - 0.0001, 0]
+    bottomFace.orientation = simd_quatf(angle: .pi, axis: [1, 0, 0])
+    self.addChild(bottomFace)
+  }
+
+  private func createRimMaterial() -> Material {
+    var material = PhysicallyBasedMaterial()
+
+    // Fun: Randomize the rim color slightly for variety
+    let hueShift = Float.random(in: -0.05...0.05)
+
+    if isSpecial {
+      // Special coin: Glowing Cosmic Purple
+      material.baseColor = .init(tint: .systemPurple)
+      material.emissiveColor = .init(color: .systemPurple)
+      material.emissiveIntensity = 3.0
+
+      // Ultra-premium metallic properties
+      material.metallic = .init(floatLiteral: 1.0)
+      material.roughness = .init(floatLiteral: 0.05)  // Very shiny
+      material.clearcoat = .init(floatLiteral: 1.0)  // Extra lacquer layer
+      material.clearcoatRoughness = .init(floatLiteral: 0.0)  // Perfect reflection
+      material.specular = .init(floatLiteral: 1.0)
+    } else {
+      // Regular coins: Shiny Anodized Metal
+      var red: CGFloat = 0
+      var green: CGFloat = 0
+      var blue: CGFloat = 0
+      var alpha: CGFloat = 0
+      UIColor.systemPink.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+      let finalColor = UIColor(
+        hue: (0.95 + CGFloat(hueShift)),
+        saturation: 0.8,
+        brightness: 1.0,
+        alpha: 1.0
+      )
+
+      material.baseColor = .init(tint: finalColor)
+      material.metallic = .init(floatLiteral: 0.95)
+      material.roughness = .init(floatLiteral: 0.15)
+      material.clearcoat = .init(floatLiteral: 1.0)
+      material.clearcoatRoughness = .init(floatLiteral: 0.0)
+    }
+
+    return material
   }
 
   private func createTexturedMaterial(named textureName: String) -> Material {
@@ -79,17 +144,22 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
       let texture = try? TextureResource.generate(from: cgImage, options: .init(semantic: .color))
     {
       var material = PhysicallyBasedMaterial()
-      material.baseColor = .init(tint: .white, texture: .init(texture))
-      material.metallic = .init(floatLiteral: 0.1) // Subtle metallic
-      material.roughness = .init(floatLiteral: 0.2) // Sleek but not mirror-like
+      let tint: UIColor = isSpecial ? .systemPurple : .white
+      material.baseColor = .init(tint: tint, texture: .init(texture))
+
+      material.metallic = .init(floatLiteral: 0.3)
+      material.roughness = .init(floatLiteral: 0.2)
+      material.clearcoat = .init(floatLiteral: 0.8)
+      material.specular = .init(floatLiteral: 1.0)
       return material
     }
 
-    // Fallback to solid color if texture loading fails
+    // Fallback to solid color
     var fallbackMaterial = PhysicallyBasedMaterial()
-    fallbackMaterial.baseColor = .init(tint: isSpecial ? .green : .systemPink)
-    fallbackMaterial.metallic = .init(floatLiteral: 0.8)
-    fallbackMaterial.roughness = .init(floatLiteral: 0.3)
+    fallbackMaterial.baseColor = .init(tint: isSpecial ? .systemPurple : .systemPink)
+    fallbackMaterial.metallic = .init(floatLiteral: 1.0)
+    fallbackMaterial.roughness = .init(floatLiteral: 0.1)
+    fallbackMaterial.clearcoat = .init(floatLiteral: 1.0)
     return fallbackMaterial
   }
 
@@ -133,13 +203,14 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
   func setSpecial(_ special: Bool) {
     self.isSpecial = special
 
-    // Update material
-    let textureName = special ? "smileySpecial" : smileyFace.rawValue
-    let material = createTexturedMaterial(named: textureName)
-
+    // Update rim material
     if let mesh = self.model?.mesh {
-      self.model = ModelComponent(mesh: mesh, materials: [material])
+      self.model = ModelComponent(mesh: mesh, materials: [createRimMaterial()])
     }
+
+    // Update faces
+    let height = PhysicsConfig.randomCoinHeight  // Re-fetching height is slightly risky but usually okay here for radius consistency
+    updateFaces(height: height, radius: PhysicsConfig.coinRadius)
   }
 
   /// Freeze physics temporarily
