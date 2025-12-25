@@ -23,7 +23,14 @@ enum SmileyFace: String, CaseIterable {
 class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
 
   /// Whether this is the special tappable coin
-  var isSpecial: Bool = false
+  var isSpecial: Bool = false {
+    didSet {
+      updateSpecialVisuals()
+    }
+  }
+
+  /// Point light for special coin glow
+  private var specialLight: Entity?
 
   /// Unique identifier for this coin
   let coinId: UUID = UUID()
@@ -207,19 +214,6 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
     self.physicsMotion = motion
   }
 
-  /// Update texture for special coin selection
-  func setSpecial(_ special: Bool) {
-    self.isSpecial = special
-
-    // Update rim material
-    if let mesh = self.model?.mesh {
-      self.model = ModelComponent(mesh: mesh, materials: [createRimMaterial()])
-    }
-
-    let height = (self.model?.mesh.bounds.extents.y) ?? PhysicsConfig.coinRadius
-    updateFaces(height: height, radius: PhysicsConfig.coinRadius)
-  }
-
   /// Freeze physics temporarily
   func freezePhysics() {
     guard var physics = self.physicsBody else { return }
@@ -232,5 +226,56 @@ class CoinEntity: Entity, HasModel, HasPhysics, HasCollision {
     guard var physics = self.physicsBody else { return }
     physics.mode = .dynamic
     self.physicsBody = physics
+  }
+
+  /// Update visuals based on special status
+  private func updateSpecialVisuals() {
+    // 1. Point Light setup
+    if isSpecial {
+      if specialLight == nil {
+        let light = PointLight()
+        light.light.color = .systemPurple
+        light.light.intensity = 5000  // Bright enough to illuminate nearby coins
+        light.light.attenuationRadius = 0.2
+        light.position = [0, 0, 0]
+        light.name = "special_light"
+        self.addChild(light)
+        self.specialLight = light
+      }
+    } else {
+      specialLight?.removeFromParent()
+      specialLight = nil
+    }
+
+    // 2. Refresh materials
+    if let mesh = self.model?.mesh {
+      self.model = ModelComponent(mesh: mesh, materials: [createRimMaterial()])
+    }
+    let height = (self.model?.mesh.bounds.extents.y) ?? PhysicsConfig.coinRadius
+    updateFaces(height: height, radius: PhysicsConfig.coinRadius)
+  }
+
+  /// Accumulated time for pulse animation
+  private var pulsateTime: Double = 0
+
+  /// Pulsate the scale for visual attention
+  func updateAnimation(deltaTime: Double) {
+    if isSpecial && !isFound {
+      pulsateTime += deltaTime
+      // Very slow, subtle pulse
+      let speed: Double = 3.0
+      let amplitude: Float = 0.05
+      let scale = 1.0 + amplitude * sin(Float(pulsateTime * speed))
+      self.scale = [scale, scale, scale]
+    } else {
+      self.scale = [1, 1, 1]
+      pulsateTime = 0
+    }
+  }
+
+  private var isFound: Bool {
+    // Logic to stop pulse if we are in the middle of a found-animation
+    // This will be set by the scene
+    return false
   }
 }

@@ -45,7 +45,7 @@ class SpecialCoinManager {
 
     // Reset previous special coin
     if let previous = currentSpecialCoin {
-      previous.setSpecial(false)
+      previous.isSpecial = false
     }
 
     // Select new special coin
@@ -55,7 +55,7 @@ class SpecialCoinManager {
     let availableCoins = coins
     guard let newSpecial = availableCoins.randomElement() else { return nil }
 
-    newSpecial.setSpecial(true)
+    newSpecial.isSpecial = true
 
     // Ensure it's toward the front (positive Z) so it's VISIBLE to the user
     // We use a value slightly less than max to avoid clipping but ensure it's on top
@@ -71,7 +71,7 @@ class SpecialCoinManager {
   /// Marks the current special coin as found
   func markAsFound() {
     hasFoundSpecialThisSession = true
-    currentSpecialCoin?.setSpecial(false)
+    currentSpecialCoin?.isSpecial = false
     currentSpecialCoin = nil
   }
 

@@ -27,6 +27,7 @@ struct ContentView: View {
         interactionRouter: interactionRouter,
         backgroundColor: backgroundColor
       )
+      .blur(radius: scene.showQuoteModal ? 10 : 0)
       .ignoresSafeArea()
 
       // Message overlay
